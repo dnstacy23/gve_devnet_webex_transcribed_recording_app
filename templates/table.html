@@ -1,0 +1,123 @@
+
+{% extends "masterPage.html" %}
+
+{% block content %}
+    <div class="row">
+        <!--Alert message div-->
+        <div class="alert alert--danger" id="alert-div-error" style="display:none;">
+            <div class="alert__icon icon-error-outline"></div>
+            <div class="alert__message">There was an issue downloading the recording</div>
+            <br>
+        </div>
+        <div class="alert alert--success" id="alert-div-success" style="display:none;">
+            <div class="alert__icon icon-check"></div>
+            <div class="alert__message">The recording downloaded successfully!</div>
+            <br>
+        </div>
+    </div>
+    <div class="modal modal--small" style="display: none;" id="modal-submit">
+        <div class="modal__dialog">
+            <div class="modal__content">
+                <div class="modal__body">
+                    <div id="loading-submit" class="col-md-12">
+                        <div class="subheader text-center">Downloading Transcribed Video...</div>
+                        <div class="loading-dots loading-dots--info" aria-label="Loading, please wait...">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="section">
+        <div class="flex-center-vertical">
+            <h1>My Recordings</h1>
+        </div>
+    </div>
+    <div class="section">
+        <!--CUSTOMIZE: Change table content as needed -->
+        <div class="responsive-table">
+          <table class="table table--lined table--selectable table" id="recordings">
+                <thead>
+                    <tr>
+                        <th>
+                            <label class="checkbox">
+                                <input type="checkbox">
+                                <span class="checkbox__input"></span>
+                            </label>
+                        </th>
+                        <th>Recording</th>
+                        <th class="text-center">Time Recorded</th>
+                        <th class="text-center hidden-xs-down">Duration</th>
+                        <th class="hidden-md-down">Size</th>
+                        <th class="hidden-md-down">Format</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for recording in recordings %}
+                    <tr>
+                        <td>
+                            <label class="checkbox">
+                                <input type="checkbox" value={{ recording.id }}>
+                                <span class="checkbox__input"></span>
+                            </label>
+                        </td>
+                        <td>{{ recording.name }}</td>
+                        <td class="text-center">{{ recording.date }}</td>
+                        <td class="text-center hidden-xs-down">{{ recording.duration }}</td>
+                        <td class="hidden-md-down">{{ recording.size }}</td>
+                        <td class="hidden-md-down">{{ recording.format }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+             <!--CUSTOMIZE END-->
+        </div>
+        <div class="row">
+            <div class="col-xl-12" style="margin-bottom:1%;">
+                <button class="btn btn--primary" id="download_transcribed_video">Download</button>
+            </div>
+        </div>
+    </div>
+{%  endblock %}
+
+{% block javascript %}
+    <script>
+      $("#download_transcribed_video").click(function(){
+        console.log("Click!");
+        $("#modal-submit").show();
+        var checked_recordings = [];
+        $("table tr").each(function(){
+          var checkbox = $(this).find('input[type="checkbox"]');
+          if (checkbox.length && checkbox.prop('checked')) {
+            for (let row of checkbox) {
+              checked_recordings.push(row.value);
+            }
+          }
+        });
+
+        
+       $.ajax(
+        {
+          url: '/download',
+          type: 'POST',
+          data: JSON.stringify({'items': checked_recordings}),
+          contentType: 'application/json',
+          complete: function(response, data){
+            $("#modal-submit").hide()
+            console.log(response);
+            if (response['responseJSON']['status'] === 'Success') {
+              $("#alert-div-success").show();
+            }
+            else {
+              $("#alert-div-error").show();
+            }
+          }
+        });
+      });
+    </script>
+{%  endblock %}
