@@ -110,11 +110,13 @@
           complete: function(response, data){
             $("#modal-submit").hide()
             console.log(response);
-            if (response['responseJSON']['status'] === 'Success') {
-              $("#alert-div-success").show();
+            if (response['responseJSON']['status'] === 'Failure') {
+              $("#alert-div-error").show();
             }
             else {
-              $("#alert-div-error").show();
+              $("#alert-div-success").show();
+              var url = response['responseJSON']['filepath'];
+              window.open(url, '_blank');
             }
           }
         });

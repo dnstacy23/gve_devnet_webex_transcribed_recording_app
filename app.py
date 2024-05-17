@@ -1,4 +1,5 @@
-""" Copyright (c) 2023 Cisco and/or its affiliates.
+"""
+Copyright (c) 2024 Cisco and/or its affiliates.
 This software is licensed to you under the terms of the Cisco Sample
 Code License, Version 1.1 (the "License"). You may obtain a copy of the
 License at
@@ -12,7 +13,7 @@ or implied.
 """
 
 # Import Section
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 import datetime
 import requests
 import json
@@ -20,6 +21,8 @@ from dotenv import load_dotenv
 import os
 from vtt_to_srt.vtt_to_srt import ConvertFile
 import ffmpeg
+from io import BytesIO
+from zipfile import ZipFile, ZipInfo
 import webex_api
 
 # load all environment variables
@@ -108,6 +111,7 @@ def download():
             }
 
             #Get the recording and transcript download links
+            video_files = []
             for recording_id in recordings:
                 recording = webex_api.get_specific_recording(BASE_URL, headers, recording_id)
 
@@ -144,15 +148,20 @@ def download():
                 final_recording = ffmpeg.output(video_with_subtitles, audio,
                                                 recording_name+"_subtitled_video.mp4")
                 final_recording.overwrite_output().run()
+                video_files.append(recording_name+"_subtitled_video.mp4")
+
+            with ZipFile("./static/recordings.zip", 'w') as zf:
+                for video in video_files:
+                    zf.write(video)
 
             #Everything works
-            return jsonify({"status": "Success"})
-
+            return jsonify({"status": "Success", "filepath": "./static/recordings.zip"})
         except Exception as e:
             print(e)
 
             #Something has gone wrong
             return jsonify({"status": "Failure"})
+
 
 
 if __name__ == "__main__":
