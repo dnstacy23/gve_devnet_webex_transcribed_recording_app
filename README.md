@@ -1,5 +1,5 @@
 # GVE DevNet Webex Transcribed Recording App
-This repository contains the source code of a Flask app that will display all the available Webex recordings of a Webex user. Additionally, the Flask app can create a video from the recording with closed captions from the transcription. 
+This repository contains the source code of a Flask app that will display all the available Webex recordings of a Webex user. Additionally, the Flask app can create a video from the recording with closed captions from the transcription that the user can download. 
 
 ![/IMAGES/workflow.png](/IMAGES/workflow.png)
 
@@ -56,7 +56,7 @@ To download the recordings with the transcript overlaid on the video, select the
 
 ![/IMAGES/success.png](/IMAGES/success.png)
 
-If the download succeeds, then you will now find an mp4 file of the captioned recording in the same directory as the web app. To view the video, open it any video player.
+If the download succeeds, then you will now find a zip file with all the videos in your Downloads. Unzip the file to reveal all the video recordings. To view a video, open it any video player. If the success message appears but the zip file has not downloaded, make sure pop-ups are allowed for the url in your browser.
 
 ![/IMAGES/video.png](/IMAGES/video.png)
 
