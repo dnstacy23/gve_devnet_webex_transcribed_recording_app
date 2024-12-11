@@ -7,6 +7,7 @@ This repository contains the source code of a Flask app that will display all th
 * Danielle Stacy
 
 ## Solution Components
+* Python 3.12
 * Webex
 
 ## Prerequisites
